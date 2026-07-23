@@ -1,0 +1,3 @@
+# JitPack 빌드 설정 — 기본 JDK 가 8 이라 17 명시 필수
+jdk:
+  - openjdk17

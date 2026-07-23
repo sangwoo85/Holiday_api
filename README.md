@@ -5,7 +5,60 @@
 
 - 토·일요일은 데이터에 없음 — **공휴일 날짜 목록만** 반환 (주말 제외 요구사항에 그대로 부합)
 - `isHoliday=Y` 항목만 반영: 법정공휴일 + 국경일 중 공휴일 + **대체공휴일** + 임시공휴일·선거일
-- 의존성: JDK 21 내장 `java.net.http.HttpClient` + `jackson-databind` (그 외 없음, Spring 미사용)
+- 의존성: JDK 내장 `java.net.http.HttpClient` + `jackson-databind` (그 외 없음, Spring 미사용). **Java 17+**
+
+## 0. 라이브러리로 사용하기
+
+### 방법 A — 같은 PC에서 (로컬 설치)
+
+이 저장소에서 한 번 설치:
+
+```bash
+./mvnw clean install
+```
+
+사용하는 프로젝트 `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>kr.holiday</groupId>
+    <artifactId>korea-holiday-fetcher</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
+### 방법 B — 어디서든 (JitPack, GitHub 태그 기반)
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>com.github.sangwoo85</groupId>
+    <artifactId>Holiday_api</artifactId>
+    <version>v0.1.0</version>
+</dependency>
+```
+
+### 코드 사용 예
+
+```java
+import kr.holiday.Holiday;
+import kr.holiday.HolidayApiClient;
+
+// 키는 코드에 하드코딩하지 말고 환경변수/설정에서 주입
+HolidayApiClient client = new HolidayApiClient(System.getenv("HOLIDAY_API_SERVICE_KEY"));
+
+List<Holiday> holidays = client.fetchHolidays(2027);
+holidays.forEach(h -> System.out.println(h.date() + " " + h.name()
+        + (h.substitute() ? " (대체공휴일)" : "")));
+```
+
+> 테스트/미러 서버가 필요하면 `new HolidayApiClient(key, baseUrl)` 로 엔드포인트 override 가능.
 
 ## 1. 발급키 준비
 

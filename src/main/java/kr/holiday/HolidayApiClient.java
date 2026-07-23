@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class HolidayApiClient {
 
-    static final String BASE_URL =
+    static final String DEFAULT_BASE_URL =
             "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -36,16 +36,29 @@ public class HolidayApiClient {
 
     private final HttpClient http;
     private final String serviceKey;
+    private final String baseUrl;
 
     /**
      * @param serviceKey 공공데이터포털 발급키. 디코딩(원본)·인코딩 키 모두 허용 —
      *                   '%' 포함 여부로 자동 판별해 이중 인코딩을 방지한다.
      */
     public HolidayApiClient(String serviceKey) {
+        this(serviceKey, DEFAULT_BASE_URL);
+    }
+
+    /**
+     * @param serviceKey 공공데이터포털 발급키
+     * @param baseUrl    getRestDeInfo 엔드포인트 전체 URL (테스트/미러 서버용 override)
+     */
+    public HolidayApiClient(String serviceKey, String baseUrl) {
         if (serviceKey == null || serviceKey.isBlank()) {
             throw new IllegalArgumentException("serviceKey 가 비어 있습니다 (data.go.kr 발급키 필요)");
         }
+        if (baseUrl == null || baseUrl.isBlank()) {
+            throw new IllegalArgumentException("baseUrl 이 비어 있습니다");
+        }
         this.serviceKey = serviceKey;
+        this.baseUrl = baseUrl;
         this.http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build();
     }
 
@@ -54,7 +67,7 @@ public class HolidayApiClient {
         String key = serviceKey.contains("%")
                 ? serviceKey
                 : URLEncoder.encode(serviceKey, StandardCharsets.UTF_8);
-        String url = BASE_URL + "?solYear=" + year + "&_type=json&numOfRows=100&ServiceKey=" + key;
+        String url = baseUrl + "?solYear=" + year + "&_type=json&numOfRows=100&ServiceKey=" + key;
 
         HttpRequest request = HttpRequest.newBuilder(URI.create(url))
                 .timeout(Duration.ofSeconds(5))
