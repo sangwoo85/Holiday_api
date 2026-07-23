@@ -19,7 +19,7 @@ public final class Main {
 
     public static void main(String[] args) throws Exception {
         String key = System.getenv("HOLIDAY_API_SERVICE_KEY");
-        if (key == null || key.isBlank()) {
+        if (key == null || key.trim().isEmpty()) {
             System.err.println("환경변수 HOLIDAY_API_SERVICE_KEY 에 공공데이터포털 발급키를 설정하세요.");
             System.err.println("예) HOLIDAY_API_SERVICE_KEY='발급키' ./mvnw -q compile exec:java -Dexec.args=\"2027\"");
             System.exit(1);

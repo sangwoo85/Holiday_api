@@ -5,7 +5,10 @@
 
 - 토·일요일은 데이터에 없음 — **공휴일 날짜 목록만** 반환 (주말 제외 요구사항에 그대로 부합)
 - `isHoliday=Y` 항목만 반영: 법정공휴일 + 국경일 중 공휴일 + **대체공휴일** + 임시공휴일·선거일
-- 의존성: JDK 내장 `java.net.http.HttpClient` + `jackson-databind` (그 외 없음, Spring 미사용). **Java 17+**
+- 의존성: JDK 내장 `HttpURLConnection` + `jackson-databind` (그 외 없음, Spring 미사용). **Java 8 이상 어디서나**
+
+> 📖 **문서**: 사용 방법·DB 저장 패턴은 [docs/API_GUIDE.md](docs/API_GUIDE.md),
+> 유지보수·릴리스 절차는 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
 
 ## 0. 라이브러리로 사용하기
 
@@ -23,7 +26,7 @@
 <dependency>
     <groupId>kr.holiday</groupId>
     <artifactId>korea-holiday-fetcher</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -40,7 +43,7 @@
 <dependency>
     <groupId>com.github.sangwoo85</groupId>
     <artifactId>Holiday_api</artifactId>
-    <version>v0.1.0</version>
+    <version>v0.2.0</version>
 </dependency>
 ```
 
@@ -54,9 +57,13 @@ import kr.holiday.HolidayApiClient;
 HolidayApiClient client = new HolidayApiClient(System.getenv("HOLIDAY_API_SERVICE_KEY"));
 
 List<Holiday> holidays = client.fetchHolidays(2027);
-holidays.forEach(h -> System.out.println(h.date() + " " + h.name()
-        + (h.substitute() ? " (대체공휴일)" : "")));
+for (Holiday h : holidays) {
+    System.out.println(h.getDate() + " " + h.getName()
+            + (h.isSubstitute() ? " (대체공휴일)" : ""));   // record 스타일 h.date() 도 지원
+}
 ```
+
+> DB 에 저장하려면 [docs/API_GUIDE.md 6장 "DB 저장 패턴"](docs/API_GUIDE.md)의 DDL/upsert 예시를 참고하세요.
 
 > 테스트/미러 서버가 필요하면 `new HolidayApiClient(key, baseUrl)` 로 엔드포인트 override 가능.
 
