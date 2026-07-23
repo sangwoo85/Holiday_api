@@ -53,4 +53,65 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!--
+          사내 Nexus 배포용 (선택, 폐쇄망 환경): ./mvnw clean deploy -Pnexus
+          기본 빌드/JitPack 에는 아무 영향 없음. URL·자격증명은 ~/.m2/settings.xml 로 주입
+          (Git 에 커밋 금지) — 절차: docs/DEVELOPMENT.md "사내 Nexus 배포" 참고.
+        -->
+        <profile>
+            <id>nexus</id>
+            <distributionManagement>
+                <repository>
+                    <id>nexus</id>
+                    <name>사내 Nexus Releases</name>
+                    <url>${nexus.release.url}</url>
+                </repository>
+                <snapshotRepository>
+                    <id>nexus</id>
+                    <name>사내 Nexus Snapshots</name>
+                    <url>${nexus.snapshot.url}</url>
+                </snapshotRepository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <!-- 폐쇄망 IDE 지원용 sources/javadoc 동반 배포 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.6.3</version>
+                        <configuration>
+                            <doclint>none</doclint>
+                            <failOnError>false</failOnError>
+                            <encoding>UTF-8</encoding>
+                            <charset>UTF-8</charset>
+                            <docencoding>UTF-8</docencoding>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

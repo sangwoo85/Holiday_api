@@ -46,6 +46,23 @@ cd Holiday_api && ./mvnw clean install
 </dependency>
 ```
 
+### 방법 C — 사내 Nexus (폐쇄망)
+
+관리자가 Nexus 에 배포해두면([DEVELOPMENT.md "사내 Nexus 배포"](DEVELOPMENT.md) 참고),
+소비 프로젝트는 **원 좌표**를 그대로 사용합니다 — Nexus 가 mirror 로 설정된 사내 환경이면
+`<repositories>` 블록도 필요 없습니다:
+
+```xml
+<dependency>
+    <groupId>kr.holiday</groupId>
+    <artifactId>korea-holiday-fetcher</artifactId>
+    <version>0.2.0</version>
+</dependency>
+```
+
+> 폐쇄망에서는 방법 A(JitPack)는 사용할 수 없고 필요하지도 않습니다 — JitPack 은 옵션입니다.
+> 의존성 `jackson-databind` 는 Nexus 의 Central proxy 또는 수동 반입으로 제공되어야 합니다.
+
 ## 3. 발급키 준비
 
 1. [공공데이터포털](https://www.data.go.kr) 회원가입

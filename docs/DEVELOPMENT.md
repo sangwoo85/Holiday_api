@@ -91,6 +91,62 @@ HOLIDAY_API_SERVICE_KEY='발급키' ./mvnw test         # 라이브 포함
 4. `jitpack.yml`(openjdk17) 유지 — JitPack 기본 JDK 8 이미지에는 최신 Maven 플러그인이 안 돌아
    빌드 JDK 는 17 을 쓰되, `release=8` 이 산출물의 JDK 8 호환을 보장한다.
 
+> JitPack 은 **선택 사항**이다(인터넷 가능 환경 전용). 폐쇄망에서는 아래 Nexus 배포를 쓰고
+> `jitpack.yml` 은 무시하면 된다(빌드에 아무 영향 없음).
+
+### 사내 Nexus 배포 (폐쇄망, 선택 — `-Pnexus`)
+
+pom 의 `nexus` 프로파일은 옵션이라 **기본 빌드에 영향이 없다.** URL·자격증명은 pom/Git 에 넣지 않고
+`~/.m2/settings.xml` 로만 주입한다:
+
+```xml
+<settings>
+    <servers>
+        <server>
+            <id>nexus</id>   <!-- pom 프로파일의 repository id 와 일치해야 함 -->
+            <username>배포계정</username>
+            <password>비밀번호</password>   <!-- mvn --encrypt-password 권장 -->
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <properties>
+                <nexus.release.url>http://nexus.사내주소/repository/maven-releases/</nexus.release.url>
+                <nexus.snapshot.url>http://nexus.사내주소/repository/maven-snapshots/</nexus.snapshot.url>
+            </properties>
+        </profile>
+    </profiles>
+</settings>
+```
+
+**배포 (Nexus 에 접근 가능한 빌드 머신에서):**
+
+```bash
+./mvnw clean deploy -Pnexus
+```
+
+`-Pnexus` 가 sources/javadoc jar 를 자동 첨부하므로 폐쇄망 IDE 에서도 소스·문서를 볼 수 있다.
+
+**완전 폐쇄망(빌드 머신도 인터넷 불가)이면 파일 반입 후 deploy-file:**
+
+```bash
+# 1) 외부에서 산출물 생성: ./mvnw clean package -Pnexus  →  target/ 의 jar 3종 + pom.xml 반입
+# 2) 내부에서 업로드 (또는 Nexus UI 수동 업로드)
+mvn deploy:deploy-file -DrepositoryId=nexus \
+  -Durl=http://nexus.사내주소/repository/maven-releases/ \
+  -Dfile=korea-holiday-fetcher-0.2.0.jar \
+  -Dsources=korea-holiday-fetcher-0.2.0-sources.jar \
+  -Djavadoc=korea-holiday-fetcher-0.2.0-javadoc.jar \
+  -DpomFile=pom.xml
+```
+
+주의사항:
+
+- 소비자 좌표는 **원 좌표** `kr.holiday:korea-holiday-fetcher:0.2.0` (`com.github.*` 는 JitPack 전용 좌표)
+- 런타임 의존성 `jackson-databind` 도 내부에서 받을 수 있어야 함 — Nexus 의 Central proxy 저장소를 쓰거나 함께 반입
+- settings.xml(자격증명 포함)은 개인/CI 머신에만 두고 저장소에 커밋 금지
+
 ## 7. 버전 이력
 
 | 버전 | 내용 |

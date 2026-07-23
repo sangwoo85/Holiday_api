@@ -31,7 +31,11 @@
 </dependency>
 ```
 
-### 방법 B — 어디서든 (JitPack, GitHub 태그 기반)
+> **폐쇄망/사내 Nexus 환경**: JitPack 없이 사용 가능합니다(옵션). 배포·사용 절차는
+> [docs/API_GUIDE.md 방법 C](docs/API_GUIDE.md)와 [docs/DEVELOPMENT.md "사내 Nexus 배포"](docs/DEVELOPMENT.md) 참고.
+> 배포는 `./mvnw clean deploy -Pnexus` (URL/계정은 `~/.m2/settings.xml` 주입).
+
+### 방법 B — 어디서든 (JitPack, GitHub 태그 기반 — 옵션)
 
 ```xml
 <repositories>
