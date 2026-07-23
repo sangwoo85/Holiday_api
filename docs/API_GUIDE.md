@@ -109,6 +109,7 @@ for (Holiday h : holidays) {
 ## 6. DB 저장 패턴
 
 조회 결과를 DB에 저장하는 권장 방법입니다.
+**DB 선택 기준·전체 테이블 설계·안티패턴은 [DB_DESIGN.md](DB_DESIGN.md)에 상세히 정리되어 있습니다.**
 
 ### 테이블 (MySQL 예시)
 

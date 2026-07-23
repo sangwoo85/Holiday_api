@@ -8,6 +8,7 @@
 - 의존성: JDK 내장 `HttpURLConnection` + `jackson-databind` (그 외 없음, Spring 미사용). **Java 8 이상 어디서나**
 
 > 📖 **문서**: 사용 방법·DB 저장 패턴은 [docs/API_GUIDE.md](docs/API_GUIDE.md),
+> DB 선택·테이블 설계는 [docs/DB_DESIGN.md](docs/DB_DESIGN.md),
 > 유지보수·릴리스 절차는 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
 
 ## 0. 라이브러리로 사용하기
